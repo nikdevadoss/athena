@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { auth } from '@/auth'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
+  IconExternalLink,
   IconGitHub,
   IconNextChat,
   IconSeparator,
@@ -55,24 +56,13 @@ export function Header() {
         </React.Suspense>
       </div>
       <div className="flex items-center justify-end space-x-2">
-        <a
-          target="_blank"
-          href="https://github.com/vercel/nextjs-ai-chatbot/"
-          rel="noopener noreferrer"
+        <Link 
+          href="/credentials" 
           className={cn(buttonVariants({ variant: 'outline' }))}
         >
-          <IconGitHub />
-          <span className="hidden ml-2 md:flex">GitHub</span>
-        </a>
-        <a
-          href="https://github.com/vercel/nextjs-ai-chatbot/"
-          target="_blank"
-          className={cn(buttonVariants())}
-        >
-          <IconVercel className="mr-2" />
-          <span className="hidden sm:block">Deploy to Vercel</span>
-          <span className="sm:hidden">Deploy</span>
-        </a>
+          <IconExternalLink></IconExternalLink>
+          <span className="hidden ml-2 md:flex">Connect External Data Sources</span>
+        </Link>
       </div>
     </header>
   )
