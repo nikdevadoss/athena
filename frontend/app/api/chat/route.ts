@@ -1,6 +1,8 @@
 import { kv } from '@vercel/kv';
 import { auth } from '@/auth';
 import { nanoid } from '@/lib/utils';
+const { executeSqlQuery } = require('./helpers/sqlHelper');
+
 
 export const runtime = 'edge';
 
@@ -17,7 +19,7 @@ export async function POST(req) {
   const prompt = messages.map(m => `${m.role}: ${m.content}`).join('\n');
 
 
-  const query = "Here's some metadata about my databases, take a question and give me the necessary queries to answer the question: metadata: USER (id, name, age), question: "
+  const queryString = "Here's some metadata about my databases, take a question and give me the necessary queries to answer the question: metadata: USER (id, name, age), question: "
 
 
   // // Assuming you have variables for tables and question like so:
@@ -28,25 +30,29 @@ export async function POST(req) {
   // const prompt = `convert question and table into SQL query. tables: ${tables}. question: ${question}`;
 
   // Call to Hugging Face API
-  const response = await fetch('https://api-inference.huggingface.co/models/google/gemma-7b', {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer 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',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      inputs: query + prompt,
-      options: { max_new_tokens: 50 }, // Customize as needed
-    }),
-  });
+  // const response = await fetch('https://api-inference.huggingface.co/models/google/gemma-7b', {
+  //   method: 'POST',
+  //   headers: {
+  //     'Authorization': 'Bearer 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',
+  //     'Content-Type': 'application/json',
+  //   },
+  //   body: JSON.stringify({
+  //     inputs: queryString + prompt,
+  //     options: { max_new_tokens: 50 }, // Customize as needed
+  //   }),
+  // });
 
-  const data = await response.json();
-  console.log(data)
-  const completion = data[0]?.generated_text
+  // const data = await response.json();
+  // console.log(data)
+  // const completion = data[0]?.generated_text
 
-  // Extract only the chatbot's last response, not the entire conversation
-  const lastResponseLines = completion.split('\n');
-  const lastResponse = lastResponseLines[lastResponseLines.length - 1];
+  // // Extract only the chatbot's last response, not the entire conversation
+  // const lastResponseLines = completion.split('\n');
+  // const lastResponse = lastResponseLines[lastResponseLines.length - 1];
+
+  const sqlQuery = "SELECT * FROM your_table"
+
+  const queryResult = await executeSqlQuery(sqlQuery);
 
   const title = messages[0].content.substring(0, 100);
   const id = json.id ?? nanoid();
@@ -61,7 +67,7 @@ export async function POST(req) {
     messages: [
       ...messages,
       {
-        content: lastResponse, // Use only the chatbot's last response
+        content: queryResult, // Use only the chatbot's last response
         role: 'assistant',
       },
     ],
@@ -74,7 +80,7 @@ export async function POST(req) {
   });
 
   // Return only the chatbot's last response to the client
-  return new Response(JSON.stringify({ response: lastResponse }), {
+  return new Response(JSON.stringify({ response: queryResult }), {
     headers: { 'Content-Type': 'application/json' },
   });
 }
