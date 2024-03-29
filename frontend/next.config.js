@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-module.exports = {
+const nextConfig = {
   images: {
     remotePatterns: [
       {
@@ -9,5 +9,10 @@ module.exports = {
         pathname: '**'
       }
     ]
+  },
+  env: {
+    NEXT_NODE_PUBLIC_BASE_API_URL: process.env.NEXT_NODE_PUBLIC_BASE_API_URL
   }
 }
+
+module.exports = nextConfig;
