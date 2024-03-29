@@ -33,7 +33,8 @@ const CredentialsPage = () => {
       const config = JSON.parse(jsonString);
       console.log('Valid Configuration:', config);
       
-      const response = await fetch(`http://localhost:8080/${dataSource}/connect`, {
+
+      const response = await fetch(`https://athena-node-server.azurewebsites.net/${dataSource}/connect/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', },
         body: jsonString,
