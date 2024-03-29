@@ -8,6 +8,7 @@ import {
   IconExternalLink,
   IconGitHub,
   IconNextChat,
+  IconOpenAI,
   IconSeparator,
   IconVercel
 } from '@/components/ui/icons'
@@ -55,7 +56,7 @@ export function Header() {
           <UserOrLogin />
         </React.Suspense>
       </div>
-      <div className="flex items-center justify-end space-x-2">
+      <div className="flex justify-end space-x-2">
         <Link 
           href="/credentials" 
           className={cn(buttonVariants({ variant: 'outline' }))}
@@ -64,6 +65,15 @@ export function Header() {
           <span className="hidden ml-2 md:flex">Connect External Data Sources</span>
         </Link>
       </div>
+      <div className="flex items-center justify-end space-x-2">
+        <Link 
+          href="/" 
+          className={cn(buttonVariants({ variant: 'outline' }))}
+        >
+          <IconOpenAI></IconOpenAI>
+          <span className="hidden ml-2 md:flex">Home</span>
+        </Link>
+      </div>  
     </header>
   )
 }
