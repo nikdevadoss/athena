@@ -26,7 +26,10 @@ const redshiftConnect = require('./routes/snowflake/connect');
 const redshiftQuery = require('./routes/snowflake/query');
 
 const supabaseConnect = require('./routes/supabase/connect');
-// const supabaseConnect = require('./routes/supabase/query');
+
+const postgresConnect = require('./routes/postgres/connect');
+
+const databricksConnect = require('./routes/databricks/connect');
 
 // Use routes
 app.use('/snowflake/connect', snowflakeConnect);
@@ -36,3 +39,7 @@ app.use('/redshift/connect', redshiftConnect);
 app.use('/redshift/query', redshiftQuery);
 
 app.use('/supabase/connect', supabaseConnect);
+
+app.use('/postgres/connect', postgresConnect);
+
+app.use('/databricks/connect', databricksConnect);

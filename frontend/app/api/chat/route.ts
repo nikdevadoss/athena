@@ -2,11 +2,13 @@ import { kv } from '@vercel/kv';
 import { auth } from '@/auth';
 import { nanoid } from '@/lib/utils';
 const { executeSqlQuery } = require('./helpers/sqlHelper');
+import { NextApiRequest, NextApiResponse } from 'next';
+
 
 
 export const runtime = 'edge';
 
-export async function POST(req) {
+export async function POST(req: any) {
   const json = await req.json();
   const { messages } = json;
   const userId = (await auth())?.user.id;
@@ -16,7 +18,7 @@ export async function POST(req) {
   }
 
   // Construct the prompt from messages
-  const prompt = messages.map(m => `${m.role}: ${m.content}`).join('\n');
+  const prompt = messages.map((m: { role: any; content: any; }) => `${m.role}: ${m.content}`).join('\n');
 
 
   const queryString = "Here's some metadata about my databases, take a question and give me the necessary queries to answer the question: metadata: USER (id, name, age), question: "

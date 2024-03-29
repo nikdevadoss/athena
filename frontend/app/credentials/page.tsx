@@ -3,25 +3,31 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
-const initialConfigurations = {
+interface Configurations {
+  [key: string]: string;
+}
+
+const initialConfigurations: Configurations= {
   supabase: '{"host": "aws-0-us-west-1.pooler.supabase.com","port": "5432","database": "postgres","user": "postgres.ufaxtembwclodjamhthf","password": "DH(9x/?BYyeq6R."}',
   snowflake: '{}',
   redshift: '{ "key1": "", "key2": "", "key3": "" }',
-  databricks: '{ "key1": "", "key2": "", "key3": "" }',
+  databricks: '{ "host": "serverHostname", "path": "httpPath", "clientId": "clientId", "clientSecret": "clientSecret" }',
+  postgres: '{"host": "aws-0-us-west-1.pooler.supabase.com","port": "5432","database": "postgres","user": "postgres.ufaxtembwclodjamhthf","password": "DH(9x/?BYyeq6R."}'
+
 };
 
 const CredentialsPage = () => {
   const [configurations, setConfigurations] = useState(initialConfigurations);
-  const [editingDataSource, setEditingDataSource] = useState(null);
+  const [editingDataSource, setEditingDataSource] = useState<string | null>(null);
 
-  const handleChange = (dataSource, value) => {
+  const handleChange = (dataSource : string, value : string) => {
     setConfigurations((prevConfigurations) => ({
       ...prevConfigurations,
       [dataSource]: value,
     }));
   };
 
-  const handleSave = async (dataSource) => {
+  const handleSave = async (dataSource : string) => {
     const jsonString = configurations[dataSource];
     try {
       const config = JSON.parse(jsonString);
