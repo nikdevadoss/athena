@@ -8,11 +8,11 @@ interface Configurations {
 }
 
 const initialConfigurations: Configurations= {
-  supabase: '{"host": "aws-0-us-west-1.pooler.supabase.com","port": "5432","database": "postgres","user": "postgres.ufaxtembwclodjamhthf","password": "DH(9x/?BYyeq6R."}',
+  supabase: '{ \n "host": "aws-0-us-west-1.pooler.supabase.com", \n "port": "5432", \n "database": "postgres", \n "user": "postgres.ufaxtembwclodjamhthf", \n "password": "DH(9x/?BYyeq6R." \n }',
   snowflake: '{}',
   redshift: '{ "key1": "", "key2": "", "key3": "" }',
   databricks: '{ "host": "serverHostname", "path": "httpPath", "clientId": "clientId", "clientSecret": "clientSecret" }',
-  postgres: '{"host": "aws-0-us-west-1.pooler.supabase.com","port": "5432","database": "postgres","user": "postgres.ufaxtembwclodjamhthf","password": "DH(9x/?BYyeq6R."}'
+  postgres: '{ \n "host": "aws-0-us-west-1.pooler.supabase.com", \n "port": "5432", \n "database": "postgres", \n "user": "postgres.ufaxtembwclodjamhthf", \n "password": "DH(9x/?BYyeq6R." \n }'
 
 };
 

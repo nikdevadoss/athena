@@ -16,17 +16,6 @@ router.post('/', async (req, res) => {
     return res.status(400).send('Database credentials are required');
   }
 
-  // let credentials;
-  // try {
-  //   // Attempt to parse the JSON string to an object
-  //   // credentials = JSON.parse(credentialsString);
-  //   credentials = credentialsString
-  // } catch (error) {
-  //   console.log(error)
-  //   return res.status(400).send('Invalid JSON format for credentials');
-  // }
-
-
   // Extract necessary info from the parsed credentials
   const { host, port, database, user, password } = credentials;
 

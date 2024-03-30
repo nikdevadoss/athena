@@ -1,8 +1,21 @@
 import { UseChatHelpers } from 'ai/react'
 
-import { Button } from '@/components/ui/button'
 import { ExternalLink } from '@/components/external-link'
-import { IconArrowRight } from '@/components/ui/icons'
+import { Button, buttonVariants } from '@/components/ui/button'
+import {
+  IconExternalLink,
+  IconGitHub,
+  IconNextChat,
+  IconOpenAI,
+  IconSeparator,
+  IconVercel,
+  IconArrowRight
+} from '@/components/ui/icons'
+
+import { cn } from '@/lib/utils'
+
+import Link from 'next/link'
+
 
 const exampleMessages = [
   {
@@ -21,34 +34,24 @@ const exampleMessages = [
 
 export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
   return (
-    <div className="mx-auto max-w-2xl px-4">
+    <div className="flex justify-center mx-auto max-w-2xl px-4">
       <div className="rounded-lg border bg-background p-8">
-        <h1 className="mb-2 text-lg font-semibold">
-          Welcome to Next.js AI Chatbot!
+        <h1 className="flex justify-center mb-2 text-lg font-semibold">
+          Welcome to Athena!
         </h1>
         <p className="mb-2 leading-normal text-muted-foreground">
-          This is an open source AI chatbot app template built with{' '}
-          <ExternalLink href="https://nextjs.org">Next.js</ExternalLink> and{' '}
-          <ExternalLink href="https://vercel.com/storage/kv">
-            Vercel KV
-          </ExternalLink>
-          .
+          {' '}<Link 
+          href="/credentials"
+        >Get started by connecting your external data sources.</Link>
         </p>
-        <p className="leading-normal text-muted-foreground">
-          You can start a conversation here or try the following examples:
-        </p>
-        <div className="mt-4 flex flex-col items-start space-y-2">
-          {exampleMessages.map((message, index) => (
-            <Button
-              key={index}
-              variant="link"
-              className="h-auto p-0 text-base"
-              onClick={() => setInput(message.message)}
-            >
-              <IconArrowRight className="mr-2 text-muted-foreground" />
-              {message.heading}
-            </Button>
-          ))}
+        <div className="flex justify-center">
+        <Link 
+          href="/credentials" 
+          className={cn(buttonVariants({ variant: 'outline' }))}
+        >
+          <IconExternalLink></IconExternalLink>
+          <span className="items-center justify-end hidden ml-2 md:flex ">Connect Data</span>
+        </Link>
         </div>
       </div>
     </div>
