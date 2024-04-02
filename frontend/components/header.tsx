@@ -56,15 +56,6 @@ export function Header() {
           <UserOrLogin />
         </React.Suspense>
       </div>
-      <div className="flex justify-end space-x-2">
-        <Link 
-          href="/credentials" 
-          className={cn(buttonVariants({ variant: 'outline' }))}
-        >
-          <IconExternalLink></IconExternalLink>
-          <span className="hidden ml-2 md:flex">Connect External Data Sources</span>
-        </Link>
-      </div>
       <div className="flex items-center justify-end space-x-2">
         <Link 
           href="/" 
@@ -74,6 +65,15 @@ export function Header() {
           <span className="hidden ml-2 md:flex">Home</span>
         </Link>
       </div>  
+      <div className="flex justify-end space-x-2">
+        <Link 
+          href="/credentials" 
+          className={cn(buttonVariants({ variant: 'outline' }))}
+        >
+          <IconExternalLink></IconExternalLink>
+          <span className="hidden ml-2 md:flex">Connect Data</span>
+        </Link>
+      </div>
     </header>
   )
 }
