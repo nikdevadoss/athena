@@ -7,7 +7,7 @@ router.post('/', (req, res) => {
   // Extract credentials from the request body
   credentials = req.body;
   
-  fetch('http://localhost:5000/snowflake/connect', {
+  fetch('https://athena-flask-api.azurewebsites.net/snowflake/connect', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

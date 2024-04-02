@@ -1,0 +1,4 @@
+Flask==3.0.1
+snowflake-connector-python[pandas]==3.7.1
+snowflake==0.7.0
+pandas==2.2.1
