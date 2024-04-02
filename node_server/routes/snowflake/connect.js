@@ -3,45 +3,25 @@ const router = express.Router();
 const snowflake = require('snowflake-sdk');
 // Ensure your Express app uses express.json() middleware to parse JSON bodies
 // Example: app.use(express.json());
-
 router.post('/', (req, res) => {
   // Extract credentials from the request body
-  const { account, username, password, application } = req.body;
-
-  // Configure and connect to Snowflake with the provided credentials
-  var connection = snowflake.createConnection({
-    account,
-    username,
-    password,
-    application
+  credentials = req.body;
+  
+  fetch('http://localhost:5000/snowflake/connect', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(credentials),
+  })
+  .then(response => response.json())
+  .then(data => {
+    res.json(data);
+  })
+  .catch(error => {
+    console.error('Error fetching data:', error);
+    res.status(500).json({error: 'Error fetching data from Python server'});
   });
-
-  console.log('Successfully connected to Snowflake.');
-
-  connection.connect((err, conn) => {
-    if (err) {
-      console.error('Unable to connect: ', err.message);
-      return res.status(500).send('Failed to connect to Snowflake.');
-    } 
-    console.log('Successfully connected to Snowflake.');
-    // Example query to fetch the current version
-    connection.execute({
-      sqlText: 'SELECT CURRENT_VERSION();',
-      complete: (err, stmt, rows) => {
-        if (err) {
-          console.error('Failed to execute statement: ', err.message);
-          return res.status(500).send('Failed to execute query.');
-        }
-        console.log('Query executed successfully, rows:', rows);
-        res.send('Connected to Snowflake and query executed');
-      }
-    });
-  });
-
-  res.json({   
-    metadata: []
-  });
-
 });
 
 module.exports = router;
