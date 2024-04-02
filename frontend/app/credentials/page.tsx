@@ -9,7 +9,7 @@ interface Configurations {
 
 const initialConfigurations: Configurations= {
   supabase: '{"host": "aws-0-us-west-1.pooler.supabase.com","port": "5432","database": "postgres","user": "postgres.ufaxtembwclodjamhthf","password": "DH(9x/?BYyeq6R."}',
-  snowflake: '{}',
+  snowflake: '{"account": "hzruuke-zvb34544", "username": "athenadev", "password": "Chinmay123", "database": "SNOWFLAKE_SAMPLE_DATA", "warehouse": "COMPUTE_WH", "schema": "PUBLIC", "application": "athena"}',
   redshift: '{ "key1": "", "key2": "", "key3": "" }',
   databricks: '{ "host": "serverHostname", "path": "httpPath", "clientId": "clientId", "clientSecret": "clientSecret" }',
   postgres: '{"host": "aws-0-us-west-1.pooler.supabase.com","port": "5432","database": "postgres","user": "postgres.ufaxtembwclodjamhthf","password": "DH(9x/?BYyeq6R."}'
@@ -34,7 +34,8 @@ const CredentialsPage = () => {
       console.log('Valid Configuration:', config);
       
 
-      const response = await fetch(`https://athena-node-server.azurewebsites.net/${dataSource}/connect/`, {
+      // const response = await fetch(`https://athena-node-server.azurewebsites.net/${dataSource}/connect/`, {
+        const response = await fetch(`http://localhost:8080/${dataSource}/connect/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', },
         body: jsonString,

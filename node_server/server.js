@@ -22,26 +22,26 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Import routes
 const snowflakeConnect = require('./routes/snowflake/connect');
-const snowflakeQuery = require('./routes/snowflake/query');
+// const snowflakeQuery = require('./routes/snowflake/query');
 
-const redshiftConnect = require('./routes/snowflake/connect');
-const redshiftQuery = require('./routes/snowflake/query');
+// const redshiftConnect = require('./routes/redshift/connect');
+// const redshiftQuery = require('./routes/snowflake/query');
 
 const supabaseConnect = require('./routes/supabase/connect');
 
 const postgresConnect = require('./routes/postgres/connect');
 
-const databricksConnect = require('./routes/databricks/connect');
+// const databricksConnect = require('./routes/databricks/connect');
 
 // Use routes
 app.use('/snowflake/connect', snowflakeConnect);
-app.use('/snowflake/query', snowflakeQuery);
+// app.use('/snowflake/query', snowflakeQuery);
 
-app.use('/redshift/connect', redshiftConnect);
-app.use('/redshift/query', redshiftQuery);
+// app.use('/redshift/connect', redshiftConnect);
+// app.use('/redshift/query', redshiftQuery);
 
 app.use('/supabase/connect', supabaseConnect);
 
 app.use('/postgres/connect', postgresConnect);
 
-app.use('/databricks/connect', databricksConnect);
+// app.use('/databricks/connect', databricksConnect);
