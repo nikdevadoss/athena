@@ -4,6 +4,7 @@ import { nanoid } from '@/lib/utils';
 const { executeSqlQuery } = require('./helpers/sqlHelper');
 import { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from "openai";
+import { format } from 'path/posix';
 
 
 export const runtime = 'edge';
@@ -43,7 +44,7 @@ function transformMetadataList(metadataList) {
 }
 
 
-async function executeQueries(queries, userId) {
+async function  executeQueries(queries, userId) {
   const responses = await Promise.all(queries.map(async query => {
     const { datasource, sql } = query;
     const formattedSql = sql.replace(/\n/g, ' ');
@@ -88,6 +89,7 @@ function parseOpenAIResponse(response: any) {
 
   // The math expression is in the last part, after the last occurrence of '```'
   const mathExpression = parts[parts.length - 1].split('```').pop().trim();
+  console.log(queries)
   return { queries, mathExpression };
 }
 
@@ -137,16 +139,18 @@ export async function POST(req: any) {
     temperature: 0.7,
     max_tokens: 100, // Adjusted for potentially more complex instructions
     top_p: 1,
-  });
-
-  // console.log(openaiResponse)
-  
-
+  });  
 
   // const content = 'POSTGRES: \n```sql\nSELECT COUNT(*) AS column_count\nFROM information_schema.columns;\n```\nSNOWFLAKE: \n```sql\nSELECT COUNT(*) AS column_count\nFROM information_schema.columns;\n```\nRESULT_FROM_POSTGRES + RESULT_FROM_SNOWFLAKE.'
   const content = openaiResponse.choices[0].message.content
+  console.log(content)
+
 
   const {queries, mathExpression} = parseOpenAIResponse(content)
+
+  console.log("QUERIES")
+  
+  console.log(queries)
 
   const datasourceQueryResponse = await executeQueries(queries, userId);
 
@@ -163,10 +167,6 @@ Calculate the total following the operation: ${mathExpression}, and craft an ans
       {
         role: "system",
         content: answerPrompt
-      },
-      {
-        role: "user",
-        content: prompt // This is the user's question extracted from chat messages.
       }
     ],
     temperature: 0.7,
@@ -208,7 +208,7 @@ Calculate the total following the operation: ${mathExpression}, and craft an ans
   });
 
   // Return only the chatbot's last response to the client
-  return new Response(JSON.stringify({ response: formattedResponse }), {
+  return new Response(formattedResponse, {
     headers: { 'Content-Type': 'application/json' },
   });
 }
