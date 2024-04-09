@@ -19,17 +19,17 @@ const openai = new OpenAI({
 });
 
 
-function transformMetadataList(metadataList) {
+function transformMetadataList(metadataList : any) {
   let result = "";
 
-  metadataList.forEach(entry => {
+  metadataList.forEach((entry: { datasource: any; metadata: string; }) => {
       const dataSource = entry.datasource;
       const metadata = JSON.parse(entry.metadata);
       result += `-- Data Source: ${dataSource}\n`;
 
       Object.keys(metadata).forEach(tableName => {
           result += `CREATE TABLE ${tableName} (\n`;
-          metadata[tableName].forEach(column => {
+          metadata[tableName].forEach((column: { column_name: any; COLUMN_NAME: any; data_type: any; DATA_TYPE: any; }) => {
               const columnName = column.column_name || column.COLUMN_NAME;
               const dataType = column.data_type || column.DATA_TYPE;
               result += `  ${columnName} ${dataType},\n`;
@@ -44,7 +44,7 @@ function transformMetadataList(metadataList) {
 }
 
 
-async function  executeQueries(queries, userId) {
+async function  executeQueries(queries: any[], userId: string) {
   const responses = await Promise.all(queries.map(async query => {
     const { datasource, sql } = query;
     const formattedSql = sql.replace(/\n/g, ' ');
@@ -78,7 +78,7 @@ function parseOpenAIResponse(response: any) {
   const queries : any[] = [];
 
   // Process the parts to fill the queries array and extract the math expression
-  parts.forEach((part, index) => {
+  parts.forEach((part: { includes: (arg0: string) => any; split: (arg0: string) => [any, any]; }, index: any) => {
     if (part.includes('```sql')) {
       // Extract the datasource and SQL query
       const [datasourceLine, sql] = part.split('```sql\n');
