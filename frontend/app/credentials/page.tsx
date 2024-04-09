@@ -1,7 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+// import React, { useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { auth } from '@/auth'
+import { useSession } from "next-auth/react";
 
 interface Configurations {
   [key: string]: string;
@@ -13,12 +16,12 @@ const initialConfigurations: Configurations= {
   redshift: '{ "key1": "", "key2": "", "key3": "" }',
   databricks: '{ "host": "serverHostname", "path": "httpPath", "clientId": "clientId", "clientSecret": "clientSecret" }',
   postgres: '{ \n "host": "aws-0-us-west-1.pooler.supabase.com", \n "port": "5432", \n "database": "postgres", \n "user": "postgres.ufaxtembwclodjamhthf", \n "password": "DH(9x/?BYyeq6R." \n }'
-
 };
 
 const CredentialsPage = () => {
   const [configurations, setConfigurations] = useState(initialConfigurations);
   const [editingDataSource, setEditingDataSource] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const handleChange = (dataSource : string, value : string) => {
     setConfigurations((prevConfigurations) => ({
@@ -27,18 +30,44 @@ const CredentialsPage = () => {
     }));
   };
 
+  useEffect(() => {
+    // Fetch the userId when the component mounts
+    const fetchUserId = async () => {
+      try {
+        const response = await fetch('/api/userId');
+        if (response.ok) {
+          const data = await response.json();
+          setUserId(data.response); // Assuming the endpoint returns { userId: '...' }
+        } else {
+          throw new Error('Failed to fetch userId');
+        }
+      } catch (error) {
+        console.error('Error fetching userId:', error);
+      }
+    };
+
+    fetchUserId();
+  }, []);
+
   const handleSave = async (dataSource : string) => {
     const jsonString = configurations[dataSource];
     try {
       const config = JSON.parse(jsonString);
       console.log('Valid Configuration:', config);
-      
+    
+
+      console.log(userId);
+
+      const requestBody = {
+        userId: userId,
+        credentials: JSON.parse(jsonString),
+      };
 
       // const response = await fetch(`https://athena-node-server.azurewebsites.net/${dataSource}/connect/`, {
-        const response = await fetch(`http://localhost:8080/${dataSource}/connect/`, {
+      const response = await fetch(`http://localhost:8080/${dataSource}/connect/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', },
-        body: jsonString,
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
