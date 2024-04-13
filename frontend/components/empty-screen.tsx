@@ -6,7 +6,7 @@ import {
   IconExternalLink,
   IconGitHub,
   IconNextChat,
-  IconOpenAI,
+  IconAthenaLogo,
   IconSeparator,
   IconVercel,
   IconArrowRight
@@ -50,7 +50,7 @@ export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
           className={cn(buttonVariants({ variant: 'outline' }))}
         >
           <IconExternalLink></IconExternalLink>
-          <span className="items-center justify-end hidden ml-2 md:flex ">Connect Data</span>
+          <span className="items-center justify-end hidden ml-2 md:flex ">Connect Data Sources</span>
         </Link>
         </div>
       </div>

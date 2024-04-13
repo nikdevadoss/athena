@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, request
 from snowflake import connector
 import pandas as pd
+import transformers
+from transformers import AutoTokenizer
 
 app = Flask(__name__)
 
@@ -48,7 +50,36 @@ def get_data():
     finally:
         cur.close()
     return jsonify(structured_data), 200
-    
+
+@app.route('/snowflake/query', methods=['POST'])
+def querySnowflake():
+    credentials = request.get_json()
+    user = credentials.get('username')
+    password = credentials.get('password')
+    account = credentials.get('account')
+    warehouse = credentials.get('warehouse')
+    database = credentials.get('database')
+    schema = credentials.get('schema')
+    query = credentials.get('query')
+
+    conn = connector.connect(
+    user=user,
+    password=password,
+    account=account,
+    warehouse=warehouse,
+    database=database,
+    schema=schema
+    )
+
+    cur = conn.cursor()
+    data = {}
+    try:
+        cur.execute(query)
+        columns = [col[0] for col in cur.description]
+        data = [dict(zip(columns, row)) for row in cur.fetchall()]
+    finally:
+        cur.close()
+    return jsonify(data), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

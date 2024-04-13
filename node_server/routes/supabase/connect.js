@@ -13,36 +13,12 @@ router.post('/', async (req, res) => {
     return res.status(400).send('Database credentials are required');
   }
 
-  // let credentials;
-  // try {
-  //   // Attempt to parse the JSON string to an object
-  //   // credentials = JSON.parse(credentialsString);
-  //   credentials = credentialsString
-  // } catch (error) {
-  //   console.log(error)
-  //   return res.status(400).send('Invalid JSON format for credentials');
-  // }
-
-
   // Extract necessary info from the parsed credentials
   const { host, port, database, user, password } = credentials;
 
   if (!host || !port || !database || !user || !password) {
     return res.status(400).send('Incomplete database credentials');
   }
-
-  // supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmYXh0ZW1id2Nsb2RqYW1odGhmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwOTA5MTA1NywiZXhwIjoyMDI0NjY3MDU3fQ.t5IaOKHRHzcdxdjBj1nD32XKP1b6Ct_0ayW1CiGms0A'
-
-  // const supabase = createClient(supabaseUrl, supabaseKey)
-
-  // {
-  //   "host": "aws-0-us-west-1.pooler.supabase.com",
-  //   "port": "5432",
-  //   "database": "postgres",
-  //   "user": "postgres.ufaxtembwclodjamhthf",
-  //   "password": "DH(9x/?BYyeq6R."
-  // }
-  
 
   const pool = new Pool({
     host: host,
@@ -51,8 +27,6 @@ router.post('/', async (req, res) => {
     user: user,
     password: password,
   })
-  
-
 
   const getTableNames = async () => {
     const { rows } = await pool.query(`
@@ -90,18 +64,6 @@ router.post('/', async (req, res) => {
 });
 module.exports = router;
 
-
-/*
-
-curl -X POST http://localhost:8080/supabase/connect \
--H "Content-Type: application/json" \
--d '{
-  "supabaseUrl": "https://ufaxtembwclodjamhthf.supabase.co",
-  "supabaseKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmYXh0ZW1id2Nsb2RqYW1odGhmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwOTA5MTA1NywiZXhwIjoyMDI0NjY3MDU3fQ.t5IaOKHRHzcdxdjBj1nD32XKP1b6Ct_0ayW1CiGms0A"
-}'
-
-
-*/
 /*
 COMMANDS TO RUN:
 
