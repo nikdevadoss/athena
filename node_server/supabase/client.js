@@ -1,12 +1,9 @@
 const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config();
+// require('dotenv').config();
+require('dotenv').config({ path: './.env.local' })
 
-//https://ufaxtembwclodjamhthf.supabase.co
-// const supabaseUrl = process.env.SUPABASE_URL;
-// const supabaseKey = process.env.SUPABASE_KEY;
-
-const supabaseUrl = 'https://ufaxtembwclodjamhthf.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmYXh0ZW1id2Nsb2RqYW1odGhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDkwOTEwNTcsImV4cCI6MjAyNDY2NzA1N30.cIycdAA2kBYD6nSCj0Dghi-B29aYPPcPVIPgzTkFKsE';
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -122,9 +119,24 @@ const insertOrUpdateMetadataInSupabase = async (metadata, userId, datasource) =>
       .eq('user_id', userId)
       .eq('datasource', datasource);
 
+    console.log(credentials)
     return credentials
   };
 
+  async function isConfigurationConnected(userId, datasource) {
+    const { data, error } = await supabase
+      .from('user_credentials')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('datasource', datasource)
+      .single()
+  
+    if (error) {
+      console.error('Error checking configuration connection:', error)
+      return false
+    }
+  
+    return true
+  }
 
-
-  module.exports = { insertOrUpdateMetadataInSupabase, getMetadataForUser , insertOrUpdateUserCredentials, getCredentialsForUser};
+  module.exports = { insertOrUpdateMetadataInSupabase, getMetadataForUser , insertOrUpdateUserCredentials, getCredentialsForUser, isConfigurationConnected };

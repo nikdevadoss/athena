@@ -51,19 +51,6 @@ def get_data():
         cur.close()
     return jsonify(structured_data), 200
 
-
-@app.route('/generateQuery', methods=['POST'])
-def generateQuery():
-    data = request.get_json()
-    openai_key = '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'
-    huggingface_key = 'Bearer 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'
-
-
-    # Process the data
-    result = {"message": "This is a response from example action."}
-    return jsonify(result), 200
-
-
 @app.route('/snowflake/query', methods=['POST'])
 def querySnowflake():
     credentials = request.get_json()
@@ -90,7 +77,6 @@ def querySnowflake():
         cur.execute(query)
         columns = [col[0] for col in cur.description]
         data = [dict(zip(columns, row)) for row in cur.fetchall()]
-        print(data)
     finally:
         cur.close()
     return jsonify(data), 200

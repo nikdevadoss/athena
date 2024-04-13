@@ -28,6 +28,7 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
 .env
 
 # turbo
@@ -37,3 +38,7 @@ yarn-error.log*
 .vercel
 .vscode
 .env*.local
+
+
+#python
+.venv*

@@ -1,4 +1,6 @@
 const express = require('express');
+require('dotenv').config({ path: './.env.local' })
+
 const router = express.Router();
 const snowflake = require('snowflake-sdk');
 const { getCredentialsForUser } = require('../../supabase/client')
@@ -17,7 +19,7 @@ router.post('/', async (req, res) => {
   };
   
   console.log(payload)
-  fetch('http://localhost:5000/snowflake/query', {
+  fetch(`${process.env.FLASK_API}snowflake/query`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -1,7 +1,10 @@
 const express = require('express');
+require('dotenv').config({ path: './.env.local' })
+
 const router = express.Router();
 const snowflake = require('snowflake-sdk');
-const { insertOrUpdateMetadataInSupabase, insertOrUpdateUserCredentials } = require('../../supabase/client')
+
+const { insertOrUpdateMetadataInSupabase, insertOrUpdateUserCredentials, isConfigurationConnected} = require('../../supabase/client')
 
 
 router.post('/', (req, res) => {
@@ -9,7 +12,7 @@ router.post('/', (req, res) => {
   const {userId, credentials} = req.body;
   
   // fetch('https://athena-flask-api.azurewebsites.net/snowflake/connect', {
-    fetch('http://localhost:5000/snowflake/connect', {
+    fetch(`${process.env.FLASK_API}snowflake/connect`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -41,10 +44,29 @@ router.post('/', (req, res) => {
     console.error('Error fetching data:', error);
     res.status(500).json({error: 'Error fetching data from Python server'});
   });
-  
+});
 
+router.get('/status/:userId', async (req, res) => {
+  var { userId } = req.params;
+  datasource = 'SNOWFLAKE';
 
-   
+  if (!userId) {
+    return res.status(400).json({ error: 'Missing userId parameter' });
+  }
+
+  console.log("CHECKING STATUS")
+
+  try {
+    const isConnected = await isConfigurationConnected(userId, datasource);
+    console.log(isConnected)
+    if (!isConnected) {
+      return res.json({ status: "DISCONNECTED" });
+    }
+    res.json({ status: "CONNECTED" });
+  } catch (error) {
+    console.error('Server error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 module.exports = router;

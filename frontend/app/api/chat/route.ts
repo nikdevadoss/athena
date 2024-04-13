@@ -1,23 +1,19 @@
 import { kv } from '@vercel/kv';
 import { auth } from '@/auth';
 import { nanoid } from '@/lib/utils';
-const { executeSqlQuery } = require('./helpers/sqlHelper');
 import { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from "openai";
 import { format } from 'path/posix';
+import { validators } from 'tailwind-merge';
 
 
 export const runtime = 'edge';
 
-
-// const openai = new OpenAI({
-//   apiKey: process.env.OPENAI_API_KEY,
-// });
-
 const openai = new OpenAI({
-  apiKey: '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',
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
+const validDatasources = ['SNOWFLAKE', 'POSTGRES'];
 
 function transformMetadataList(metadataList : any) {
   let result = "";
@@ -47,21 +43,20 @@ function transformMetadataList(metadataList : any) {
 async function  executeQueries(queries: any[], userId: string) {
   const responses = await Promise.all(queries.map(async query => {
     const { datasource, sql } = query;
-    const formattedSql = sql.replace(/\n/g, ' ');
+    // const formattedSql = sql.replace(/\n/g, ' ');
     const lowerCaseDatasource = datasource.toLowerCase();
 
     // Adjust the URL and options based on the datasource
-    const url = `http://localhost:8080/${lowerCaseDatasource}/query`;
+    const url = `${process.env.NEXT_PUBLIC_NODE_SERVER}${lowerCaseDatasource}/query`;
     const fetchOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: userId, query: formattedSql })
+      body: JSON.stringify({ userId: userId, query: sql })
     };
 
     // Fetch data from the datasource
     const response = await fetch(url, fetchOptions);
     const data = await response.json()
-    console.log(data)
     return {datasource, data}; // Return both datasource and parsed data
   }));
   
@@ -69,28 +64,16 @@ async function  executeQueries(queries: any[], userId: string) {
 }
 
 
-
-
 function parseOpenAIResponse(response: any) {
-  // Split the response by the specific pattern separating SQL queries from the math expression
-  const parts = response.split('\n```\n');
-  // Initialize an array to hold the queries
-  const queries : any[] = [];
-
-  // Process the parts to fill the queries array and extract the math expression
-  parts.forEach((part: { includes: (arg0: string) => any; split: (arg0: string) => [any, any]; }, index: any) => {
-    if (part.includes('```sql')) {
-      // Extract the datasource and SQL query
-      const [datasourceLine, sql] = part.split('```sql\n');
-      const datasource = datasourceLine.split(': ')[0];
-      queries.push({ datasource, sql: sql.trim() });
-    }
+  console.log(response)
+  const responseJson = JSON.parse(response);
+  var queries = []
+  validDatasources.forEach((datasource) => {
+    const query = {datasource: datasource, sql : responseJson[datasource]}
+    queries.push(query)
   });
-
-  // The math expression is in the last part, after the last occurrence of '```'
-  const mathExpression = parts[parts.length - 1].split('```').pop().trim();
-  console.log(queries)
-  return { queries, mathExpression };
+  const mathExpression = responseJson['expression']
+  return {queries, mathExpression};
 }
 
 
@@ -107,15 +90,13 @@ export async function POST(req: any) {
   // Construct the prompt from messages
   var prompt = messages.map((m: { role: any; content: any; }) => `${m.role}: ${m.content}`).join('\n');
   
-  var response = await fetch(`http://localhost:8080/supabase/metadata`, {
+  var response = await fetch(`${process.env.NEXT_PUBLIC_NODE_SERVER}supabase/metadata`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', },
         body: JSON.stringify({userId: userId}),
     });
 
   const responseJson = await response.json()
-
-  // console.log(responseJson)
   
   const convertedMetadata = transformMetadataList(responseJson)
 
@@ -126,18 +107,19 @@ export async function POST(req: any) {
   
   var openaiResponse = await openai.chat.completions.create({
     model: "gpt-3.5-turbo-1106",
+    response_format: { "type": "json_object" },
     messages: [
       {
         role: "system",
-        content: `Given the following SQL tables from different data sources as described: \n\n${convertedMetadata}\n\nFor each data source, provide an SQL query. Follow this format:\n\n- DATASOURCE: [SQL Query],\n\nAfter providing the SQL queries, specify a math expression to combine these results using placeholders for each datasource's result. The format should be a simple math expression.\n\nFormat the response as follows:\nDATASOURCE: sql query,\nDATASOURCE: sql query,\nmath expression.`
+        content: `Given the following SQL tables from different data sources as described: \n\n${convertedMetadata}\n\n For each data source, provide a SQL query to answer the question provided by me, using ONLY the tables and columns in the metadata that was just provided. Ensure that your queries strictly adhere to this metadata, referencing no external tables or fields that don't exist in a specific datasource. \n\nThe valid data sources are SNOWFLAKE AND POSTGRES. \n\nAfter providing the SQL queries, specify a math expression to combine these results using placeholders for each datasource's result. The format should be a simple math expression. \n\nProvide your response as a string representing a JSON, here is the format of the json : {'Datasource Name': 'sql query', 'Datasource Name': 'sql query', 'expression': 'math expression’}.\n\n Here's an example using the actual names:  {'SNOWFLAKE': 'SELECT COUNT(*) AS table_count FROM table_a', 'POSTGRES': 'SELECT COUNT(*) AS table_count FROM table_a', 'expression': '(SNOWFLAKE + POSTGRES) / 2’}'`
       },
       {
         role: "user",
         content: prompt // This is the user's question extracted from chat messages.
       }
     ],
-    temperature: 0.7,
-    max_tokens: 100, // Adjusted for potentially more complex instructions
+    temperature: 0.2,
+    max_tokens: 300, // Adjusted for potentially more complex instructions
     top_p: 1,
   });  
 
@@ -153,13 +135,14 @@ export async function POST(req: any) {
   console.log(queries)
 
   const datasourceQueryResponse = await executeQueries(queries, userId);
+  console.log(datasourceQueryResponse)
+  console.log(JSON.stringify(datasourceQueryResponse))
 
 
   const answerPrompt = `A user asked: "${prompt}"
-Given the following query results: ${datasourceQueryResponse}
-
-Calculate the total following the operation: ${mathExpression}, and craft an answer to the user's question based on this information.`;
+Given the following query results: ${JSON.stringify(datasourceQueryResponse)}\n\nCalculate the total following the operation: ${mathExpression}, and craft an answer to the user's question based on this information. \n\n Make sure to show the exact SQL queries for each data source: ${JSON.stringify(queries)} \n\n Also show the math done to get the answer you provided as well: ${mathExpression}`;
   
+  console.log(answerPrompt)
 
   openaiResponse = await openai.chat.completions.create({
     model: "gpt-3.5-turbo-1106",
@@ -169,8 +152,8 @@ Calculate the total following the operation: ${mathExpression}, and craft an ans
         content: answerPrompt
       }
     ],
-    temperature: 0.7,
-    max_tokens: 100, // Adjusted for potentially more complex instructions
+    temperature: 0.5,
+    max_tokens: 300, // Adjusted for potentially more complex instructions
     top_p: 1,
   });
 
@@ -178,7 +161,7 @@ Calculate the total following the operation: ${mathExpression}, and craft an ans
 
   console.log(openaiResponse);
   
-  const formattedResponse = queries.toString() + '\n' + finalAnswer;
+  const formattedResponse = finalAnswer;
 
 
 

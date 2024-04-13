@@ -1,8 +1,10 @@
 'use client'
 
 import Image from 'next/image'
-import { type Session } from 'next-auth'
+import { Session } from 'next-auth'
 import { signOut } from 'next-auth/react'
+import Link from 'next/link';
+
 
 import { Button } from '@/components/ui/button'
 import {
@@ -28,6 +30,7 @@ export function UserMenu({ user }: UserMenuProps) {
     <div className="flex items-center justify-between">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
+          <a href="/">
           <Button variant="ghost" className="pl-0">
             {user?.image ? (
               <Image
@@ -44,6 +47,7 @@ export function UserMenu({ user }: UserMenuProps) {
             )}
             <span className="ml-2">{user?.name}</span>
           </Button>
+          </a>
         </DropdownMenuTrigger>
         <DropdownMenuContent sideOffset={8} align="start" className="w-[180px]">
           <DropdownMenuItem className="flex-col items-start">
@@ -51,9 +55,10 @@ export function UserMenu({ user }: UserMenuProps) {
             <div className="text-xs text-zinc-500">{user?.email}</div>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
+          
+          {/* <DropdownMenuItem asChild>
             <a
-              href="https://vercel.com"
+              href="/credentials"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-between w-full text-xs"
@@ -61,6 +66,16 @@ export function UserMenu({ user }: UserMenuProps) {
               Vercel Homepage
               <IconExternalLink className="size-3 ml-auto" />
             </a>
+          </DropdownMenuItem> */}
+          <DropdownMenuItem>
+            <Link href="/credentials" passHref>
+              <div>
+                <a className="inline-flex items-center justify-between w-full text-xs">
+                  Connect Data Sources
+                  {/* <IconExternalLink className="size-3 ml-auto" /> */}
+                </a>
+              </div>
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() =>

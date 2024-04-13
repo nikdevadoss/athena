@@ -8,10 +8,12 @@ import {
   IconExternalLink,
   IconGitHub,
   IconNextChat,
-  IconOpenAI,
+  IconAthenaLogo,
+  IconAthenaNameLogo,
   IconSeparator,
   IconVercel
 } from '@/components/ui/icons'
+import AthenaLogo from './athena-name-logo';
 import { UserMenu } from '@/components/user-menu'
 import { SidebarMobile } from './sidebar-mobile'
 import { SidebarToggle } from './sidebar-toggle'
@@ -59,10 +61,8 @@ export function Header() {
       <div className="flex items-center justify-end space-x-2">
         <Link 
           href="/" 
-          className={cn(buttonVariants({ variant: 'outline' }))}
         >
-          <IconOpenAI></IconOpenAI>
-          <span className="hidden ml-2 md:flex">Home</span>
+          <IconAthenaNameLogo></IconAthenaNameLogo>
         </Link>
       </div>  
       <div className="flex justify-end space-x-2">

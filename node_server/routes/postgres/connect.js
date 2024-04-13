@@ -1,10 +1,11 @@
 const { Client, Pool } = require('pg');
  
-
 const express = require('express');
+require('dotenv').config({ path: './.env.local' })
+
 const router = express.Router();
 // const { createClient, insertOrUpdateMetadataInSupabase } = require('@supabase/supabase-js');
-const { insertOrUpdateMetadataInSupabase, insertOrUpdateUserCredentials} = require('../../supabase/client')
+const { insertOrUpdateMetadataInSupabase, insertOrUpdateUserCredentials, isConfigurationConnected} = require('../../supabase/client')
 
 
 
@@ -69,6 +70,31 @@ router.post('/', async (req, res) => {
   });
 
   res.json(metadata)
+});
+
+router.get('/status/:userId', async (req, res) => {
+  var { userId } = req.params;
+  datasource = 'POSTGRES';
+
+  console.log('REQUEST: ' + userId)
+
+  if (!userId) {
+    return res.status(400).json({ error: 'Missing userId parameter' });
+  }
+
+  console.log("CHECKING STATUS")
+
+  try {
+    const isConnected = await isConfigurationConnected(userId, datasource);
+    console.log(isConnected)
+    if (!isConnected) {
+      return res.json({ status: "DISCONNECTED" });
+    }
+    res.json({ status: "CONNECTED" });
+  } catch (error) {
+    console.error('Server error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 module.exports = router;
 

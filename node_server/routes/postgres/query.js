@@ -1,14 +1,13 @@
 const { Client, Pool } = require('pg');
  
-
 const express = require('express');
+require('dotenv').config({ path: './.env.local' })
+
 const router = express.Router();
-// const { createClient, insertOrUpdateMetadataInSupabase } = require('@supabase/supabase-js');
+
 const { getCredentialsForUser} = require('../../supabase/client')
 
 
-
-//TODO: Use supabase URL and Key instead of pooling. We want to be able to access all databases in the user's org
 router.post('/', async (req, res) => {
   const {userId, query} = req.body;
 
