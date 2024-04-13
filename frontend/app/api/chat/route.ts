@@ -67,7 +67,7 @@ async function  executeQueries(queries: any[], userId: string) {
 function parseOpenAIResponse(response: any) {
   console.log(response)
   const responseJson = JSON.parse(response);
-  var queries = []
+  var queries : any[] = [];
   validDatasources.forEach((datasource) => {
     const query = {datasource: datasource, sql : responseJson[datasource]}
     queries.push(query)

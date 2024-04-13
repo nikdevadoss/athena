@@ -25,7 +25,7 @@ interface ConnectionStatuses {
 }
 
 
-export function CheckCircle(props: JSX.IntrinsicElements["svg"]) {
+function CheckCircle(props: JSX.IntrinsicElements["svg"]) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#90ee90" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" {...props}>
       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -35,7 +35,7 @@ export function CheckCircle(props: JSX.IntrinsicElements["svg"]) {
 }
 
 // https://feathericons.dev/?search=xcircle&iconset=feather&format=strict-tsx
-export function XCircle(props: JSX.IntrinsicElements["svg"]) {
+function XCircle(props: JSX.IntrinsicElements["svg"]) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="red" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" {...props}>
       <circle cx="12" cy="12" r="10" />
@@ -46,7 +46,7 @@ export function XCircle(props: JSX.IntrinsicElements["svg"]) {
 }
 
 // https://feathericons.dev/?search=alert-triangle&iconset=feather&format=strict-tsx
-export function AlertTriangle(props: JSX.IntrinsicElements["svg"]) {
+function AlertTriangle(props: JSX.IntrinsicElements["svg"]) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" {...props}>
       <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
@@ -60,7 +60,7 @@ export function AlertTriangle(props: JSX.IntrinsicElements["svg"]) {
 const useForceUpdate = () => {
   const [, setTick] = useState(0);
   const update = useCallback(() => {
-    setTick(tick => tick + 1);
+    setTick((tick : any) => tick + 1);
   }, []);
   return update;
 };
@@ -91,7 +91,7 @@ const CredentialsPage = () => {
 
 
   const handleChange = (dataSource : string, value : string) => {
-    setConfigurations((prevConfigurations) => ({
+    setConfigurations((prevConfigurations : any) => ({
       ...prevConfigurations,
       [dataSource]: value,
     }));
@@ -114,7 +114,7 @@ const CredentialsPage = () => {
   
       try {
         const dataSources = Object.keys(initialConfigurations);
-        const newConnectionStatuses = {};
+        const newConnectionStatuses : ConnectionStatuses = {};
   
         for (const dataSource of dataSources) {
           try {
@@ -171,10 +171,10 @@ const CredentialsPage = () => {
       const responseJson = await response.json();
       console.log('Server Response:', responseJson);
       alert('Configuration saved successfully!');
-      setSaveStatuses((prev) => ({ ...prev, [dataSource]: 'success' }));
+      setSaveStatuses((prev : any) => ({ ...prev, [dataSource]: 'success' }));
     } catch (error) {
       console.error('Error saving configuration:', error);
-      setSaveStatuses((prev) => ({ ...prev, [dataSource]: 'error' }));
+      setSaveStatuses((prev : any) => ({ ...prev, [dataSource]: 'error' }));
       alert('Failed to save configuration. Please ensure your JSON is correctly formatted and the server is reachable.');
     } finally {
       setEditingDataSource(null); // Retract the editor after saving

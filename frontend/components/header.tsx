@@ -13,7 +13,6 @@ import {
   IconSeparator,
   IconVercel
 } from '@/components/ui/icons'
-import AthenaLogo from './athena-name-logo';
 import { UserMenu } from '@/components/user-menu'
 import { SidebarMobile } from './sidebar-mobile'
 import { SidebarToggle } from './sidebar-toggle'
