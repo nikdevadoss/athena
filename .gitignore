@@ -41,4 +41,7 @@ yarn-error.log*
 
 
 #python
-.venv*
+venv/
+venv
+.venv
+python_server/venv/
