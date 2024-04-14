@@ -118,6 +118,7 @@ const CredentialsPage = () => {
   
         for (const dataSource of dataSources) {
           try {
+            console.log(`${process.env.NEXT_PUBLIC_NODE_SERVER}${dataSource}/connect/status/${userId}`);
             const response = await fetch(`${process.env.NEXT_PUBLIC_NODE_SERVER}${dataSource}/connect/status/${userId}`, {
               method: 'GET',
               headers: { 'Content-Type': 'application/json' },

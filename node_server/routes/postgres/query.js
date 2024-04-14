@@ -1,7 +1,7 @@
 const { Client, Pool } = require('pg');
  
 const express = require('express');
-require('dotenv').config({ path: './.env.local' })
+require('dotenv').config()
 
 const router = express.Router();
 
