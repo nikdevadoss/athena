@@ -469,7 +469,7 @@ function IconUsers({ className, ...props }: React.ComponentProps<'svg'>) {
   )
 }
 
-function IconExternalLink({ className, ...props }) {
+function IconExternalLink() {
   // Ensure the path to the SVG is correct. It should be accessible
   // via the URL you're providing. It can be a relative path from
   // the public directory or an absolute URL if hosted elsewhere.
@@ -481,8 +481,7 @@ function IconExternalLink({ className, ...props }) {
       alt="Connection Icon"
       width="15"
       height="15"
-      className={`${className} block mx-auto`} // This will center the image
-      {...props}
+      className={`block mx-auto`} // This will center the image
     />
   );
 }
