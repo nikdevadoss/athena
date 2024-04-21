@@ -75,8 +75,10 @@ def querySnowflake():
     data = {}
     try:
         cur.execute(query)
+        print(cur.description)
         columns = [col[0] for col in cur.description]
         data = [dict(zip(columns, row)) for row in cur.fetchall()]
+        print(data)
     finally:
         cur.close()
     return jsonify(data), 200

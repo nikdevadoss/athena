@@ -27,6 +27,7 @@ router.post('/', (req, res) => {
   .then(response => response.json())
   .then(metadata => {
     console.log(response);
+    console.log(metadata)
     insertOrUpdateMetadataInSupabase(metadata, userId, "SNOWFLAKE").then(result => {
       if (result.error) {
         console.error(result.error);

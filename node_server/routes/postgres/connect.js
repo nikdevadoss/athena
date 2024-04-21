@@ -53,6 +53,8 @@ router.post('/', async (req, res) => {
 
   const metadata = await getTablesWithColumns()
 
+  console.log(metadata)
+
   insertOrUpdateMetadataInSupabase(metadata, userId, "POSTGRES").then(result => {
     if (result.error) {
       console.error(result.error);
