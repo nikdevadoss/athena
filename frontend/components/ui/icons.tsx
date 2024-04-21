@@ -487,7 +487,7 @@ function IconExternalLink({ className, ...props }) {
   );
 }
 
-function IconBackArrow({ className, ...props }) {
+function IconBackArrow({  }) {
   const imageUrl = '/navigate-next.svg'; // Ensure this path is correct
 
   return (
@@ -497,8 +497,7 @@ function IconBackArrow({ className, ...props }) {
       width="15"
       height="15"
       // Add the 'transform -scale-x-100' classes to flip the image
-      className={`${className} block mx-auto transform -scale-x-100`} 
-      {...props}
+      className={` block mx-auto transform -scale-x-100`}
     />
   );
 }
