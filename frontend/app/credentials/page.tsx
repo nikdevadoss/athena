@@ -4,12 +4,22 @@
 import React, { createContext, useState, useEffect, useCallback} from 'react';
 import { Button } from '@/components/ui/button';
 import { auth } from '@/auth'
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 import { getSession, SessionProvider } from "next-auth/react";
 
 import { stat } from 'node:fs/promises';
 import { useInsertionEffect } from 'react';
 import { connect } from 'http2';
+
+import Link from 'next/link'
+
+
+import {
+  IconBackArrow
+} from '@/components/ui/icons'
+
 
 interface Configurations {
   [key: string]: string;
@@ -56,6 +66,15 @@ function AlertTriangle(props: JSX.IntrinsicElements["svg"]) {
   );
 }
 
+function LoadingSpinner() {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <CircularProgress style={{ color: 'white' }} />
+    </div>
+  );
+
+}
+
 
 const useForceUpdate = () => {
   const [, setTick] = useState(0);
@@ -67,11 +86,13 @@ const useForceUpdate = () => {
 
 
 const initialConfigurations: Configurations= {
-  snowflake: '{"account": "hzruuke-zvb34544", "username": "athenadev", "password": "Chinmay123", "database": "SNOWFLAKE_SAMPLE_DATA", "warehouse": "COMPUTE_WH", "schema": "PUBLIC", "application": "athena"}',
+  snowflake: '{"account": "hzruuke-zvb34544", "username": "athenadev", "password": "Chinmay123", "database": "ATHENA_TEST", "warehouse": "COMPUTE_WH", "schema": "PUBLIC", "application": "athena"}',
   // supabase: '{ \n "host": "aws-0-us-west-1.pooler.supabase.com", \n "port": "5432", \n "database": "postgres", \n "user": "postgres.ufaxtembwclodjamhthf", \n "password": "DH(9x/?BYyeq6R." \n }',
-  // redshift: '{ "key1": "", "key2": "", "key3": "" }',
+  redshift: '{ "key1": "", "key2": "", "key3": "" }',
   databricks: '{ "host": "serverHostname", "path": "httpPath", "clientId": "clientId", "clientSecret": "clientSecret" }',
-  postgres: '{ \n "host": "aws-0-us-west-1.pooler.supabase.com", \n "port": "5432", \n "database": "postgres", \n "user": "postgres.ufaxtembwclodjamhthf", \n "password": "DH(9x/?BYyeq6R." \n }'
+  // postgres: '{ \n "host": "aws-0-us-west-1.pooler.supabase.com", \n "port": "5432", \n "database": "postgres", \n "user": "postgres.ufaxtembwclodjamhthf", \n "password": "DH(9x/?BYyeq6R." \n }'
+  postgres: '{ \n "host": "aws-0-us-west-1.pooler.supabase.com", \n "port": "5432", \n "database": "postgres", \n "user": "postgres.gjyxzbbojhjurrqzqwdz", \n "password": "9BPfyD2otz9EjBrH" \n }'
+
 };
 
 const CredentialsPage = () => {
@@ -80,6 +101,8 @@ const CredentialsPage = () => {
   const [saveStatuses, setSaveStatuses] = useState<SaveStatuses>({});
   const [connectionStatuses, setConnectionStatuses] = useState<ConnectionStatuses>({});
   const [userId, setUserId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
 
 
   // console.log(session)
@@ -118,6 +141,7 @@ const CredentialsPage = () => {
   
         for (const dataSource of dataSources) {
           try {
+            console.log(`${process.env.NEXT_PUBLIC_NODE_SERVER}${dataSource}/connect/status/${userId}`);
             const response = await fetch(`${process.env.NEXT_PUBLIC_NODE_SERVER}${dataSource}/connect/status/${userId}`, {
               method: 'GET',
               headers: { 'Content-Type': 'application/json' },
@@ -146,6 +170,8 @@ const CredentialsPage = () => {
   const handleSave = async (dataSource : string) => {
     console.log(JSON.stringify(connectionStatuses));
     const jsonString = configurations[dataSource];
+    var successfulSave = false;
+    setIsLoading(true);
     try {
       const config = JSON.parse(jsonString);
       console.log('Valid Configuration:', config);
@@ -171,49 +197,74 @@ const CredentialsPage = () => {
       const responseJson = await response.json();
       console.log('Server Response:', responseJson);
       alert('Configuration saved successfully!');
+      setIsLoading(false);
       setSaveStatuses((prev : any) => ({ ...prev, [dataSource]: 'success' }));
+      successfulSave = true;
     } catch (error) {
       console.error('Error saving configuration:', error);
+      alert('Error saving configuration: ' + error);
+      setIsLoading(false);
       setSaveStatuses((prev : any) => ({ ...prev, [dataSource]: 'error' }));
-      alert('Failed to save configuration. Please ensure your JSON is correctly formatted and the server is reachable.');
     } finally {
+      setIsLoading(false);
       setEditingDataSource(null); // Retract the editor after saving
     }
   };
 
   return (
-    <div className="space-y-4 p-4">
-      <h1 className="text-lg font-bold text-center">Data Source Connections</h1>
-      {Object.keys(initialConfigurations).map((dataSource) => (
-        <div key={dataSource} className="mb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-            {connectionStatuses[dataSource] === 'connected' || saveStatuses[dataSource] === 'success' ? (
-              <CheckCircle className="w-5 h-5 mr-2 text-green-500" />
-            ) : saveStatuses[dataSource] === 'error' ? (
-              <XCircle className="w-5 h-5 mr-2 text-red-500" />
-            ) : (
-              null
-            )}
-              <h2 className="text-md font-semibold">{dataSource.toUpperCase()}</h2>
-            </div>
-            <Button onClick={() => setEditingDataSource(editingDataSource !== dataSource ? dataSource : null)}>
-              {editingDataSource === dataSource ? 'Close' : connectionStatuses[dataSource] === 'not-connected' ? 'Connect' : 'Edit'}
-            </Button>
-          </div>
-          {editingDataSource === dataSource && (
-            <>
-              <textarea
-                value={configurations[dataSource]}
-                onChange={(e) => handleChange(dataSource, e.target.value)}
-                className="w-full h-64 p-2 mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              />
-              <Button onClick={() => handleSave(dataSource)}>Save</Button>
-            </>
-          )}
-        </div>
-      ))}
+    <div className="p-4">
+      {isLoading && <LoadingSpinner />}
+  <div className="flex items-center justify-between mb-4">
+    {/* Left: Back to Chatbot Link */}
+    <Link legacyBehavior href="/" passHref>
+      <a className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-black bg-white hover:bg-gray-100">
+        <IconBackArrow />
+        <span className="ml-2">Back to Chatbot</span>
+      </a>
+    </Link>
+
+    {/* Right: Title centered within the remaining space */}
+    <div className="flex-grow text-center">
+      <h1 className="text-lg font-bold">Data Source Connections</h1>
     </div>
+
+    {/* Spacer div to balance the flexbox */}
+    <div style={{ width: '198px', visibility: 'hidden' }}>Spacer</div>
+  </div>
+
+  {Object.keys(initialConfigurations).map((dataSource) => (
+    <div key={dataSource} className="mb-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          {connectionStatuses[dataSource] === 'connected' || saveStatuses[dataSource] === 'success' ? (
+            <CheckCircle className="w-5 h-5 mr-2 text-green-500" />
+          ) : saveStatuses[dataSource] === 'error' ? (
+            <XCircle className="w-5 h-5 mr-2 text-red-500" />
+          ) : (
+            null
+          )}
+          <h2 className="text-md font-semibold">{dataSource.toUpperCase()}</h2>
+        </div>
+        <Button onClick={() => setEditingDataSource(editingDataSource !== dataSource ? dataSource : null)}>
+          {editingDataSource === dataSource ? 'Close' : connectionStatuses[dataSource] === 'not-connected' ? 'Connect' : 'Edit'}
+        </Button>
+      </div>
+      {editingDataSource === dataSource && (
+        <>
+          <textarea
+            value={configurations[dataSource]}
+            onChange={(e) => handleChange(dataSource, e.target.value)}
+            className="w-full h-64 p-2 mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          />
+          <Button onClick={() => handleSave(dataSource)}>
+            {connectionStatuses[dataSource] === 'not-connected' ? 'Connect' : 'Sync'}
+          </Button>
+        </>
+      )}
+    </div>
+  ))}
+</div>
+
   );
 };
 

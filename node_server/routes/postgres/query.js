@@ -1,7 +1,7 @@
 const { Client, Pool } = require('pg');
  
 const express = require('express');
-require('dotenv').config({ path: './.env.local' })
+require('dotenv').config()
 
 const router = express.Router();
 
@@ -11,11 +11,14 @@ const { getCredentialsForUser} = require('../../supabase/client')
 router.post('/', async (req, res) => {
   const {userId, query} = req.body;
 
+
   const credentials = await getCredentialsForUser(userId, 'POSTGRES')
   const credentialsJson = JSON.parse(credentials[0]['credentials']);
   console.log(credentialsJson)
   // Extract necessary info from the parsed credentials
   const { host, port, database, user, password } = credentialsJson;
+
+  console.log(query)
 
 
   if (!host || !port || !database || !user || !password) {
@@ -29,9 +32,12 @@ router.post('/', async (req, res) => {
     password: password,
   })
 
-  const { rows } = await pool.query(query);
+  try {
+    const { rows } = await pool.query(query);
+    res.json(rows);
+  } catch (error) {
+    res.json(error);
+  }
 
-  console.log(rows)
-  res.json(rows)
 });
 module.exports = router;

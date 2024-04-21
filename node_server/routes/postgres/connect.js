@@ -1,7 +1,7 @@
 const { Client, Pool } = require('pg');
  
 const express = require('express');
-require('dotenv').config({ path: './.env.local' })
+require('dotenv').config()
 
 const router = express.Router();
 // const { createClient, insertOrUpdateMetadataInSupabase } = require('@supabase/supabase-js');
@@ -52,6 +52,8 @@ router.post('/', async (req, res) => {
   }
 
   const metadata = await getTablesWithColumns()
+
+  console.log(metadata)
 
   insertOrUpdateMetadataInSupabase(metadata, userId, "POSTGRES").then(result => {
     if (result.error) {

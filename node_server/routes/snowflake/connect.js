@@ -1,5 +1,6 @@
+const { response } = require('express');
 const express = require('express');
-require('dotenv').config({ path: './.env.local' })
+require('dotenv').config()
 
 const router = express.Router();
 const snowflake = require('snowflake-sdk');
@@ -11,6 +12,7 @@ router.post('/', (req, res) => {
   // Extract credentials from the request body
   const {userId, credentials} = req.body;
   
+  console.log(`${process.env.FLASK_API}snowflake/connect`);
   // fetch('https://athena-flask-api.azurewebsites.net/snowflake/connect', {
     fetch(`${process.env.FLASK_API}snowflake/connect`, {
     method: 'POST',
@@ -24,6 +26,8 @@ router.post('/', (req, res) => {
   })
   .then(response => response.json())
   .then(metadata => {
+    console.log(response);
+    console.log(metadata)
     insertOrUpdateMetadataInSupabase(metadata, userId, "SNOWFLAKE").then(result => {
       if (result.error) {
         console.error(result.error);

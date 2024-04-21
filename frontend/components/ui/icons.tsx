@@ -469,22 +469,38 @@ function IconUsers({ className, ...props }: React.ComponentProps<'svg'>) {
   )
 }
 
-function IconExternalLink({
-  className,
-  ...props
-}: React.ComponentProps<'svg'>) {
+function IconExternalLink() {
+  // Ensure the path to the SVG is correct. It should be accessible
+  // via the URL you're providing. It can be a relative path from
+  // the public directory or an absolute URL if hosted elsewhere.
+  const imageUrl = '/connection-svgrepo-com.svg'; // Update this path accordingly
+
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="currentColor"
-      className={cn('size-4', className)}
-      viewBox="0 0 256 256"
-      {...props}
-    >
-      <path d="M224 104a8 8 0 0 1-16 0V59.32l-66.33 66.34a8 8 0 0 1-11.32-11.32L196.68 48H152a8 8 0 0 1 0-16h64a8 8 0 0 1 8 8Zm-40 24a8 8 0 0 0-8 8v72H48V80h72a8 8 0 0 0 0-16H48a16 16 0 0 0-16 16v128a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16v-72a8 8 0 0 0-8-8Z" />
-    </svg>
-  )
+    <img
+      src={imageUrl}
+      alt="Connection Icon"
+      width="15"
+      height="15"
+      className={`block mx-auto`} // This will center the image
+    />
+  );
 }
+
+function IconBackArrow({  }) {
+  const imageUrl = '/navigate-next.svg'; // Ensure this path is correct
+
+  return (
+    <img
+      src={imageUrl}
+      alt="Back Arrow Icon"
+      width="15"
+      height="15"
+      // Add the 'transform -scale-x-100' classes to flip the image
+      className={` block mx-auto transform -scale-x-100`}
+    />
+  );
+}
+
 
 function IconChevronUpDown({
   className,
@@ -532,5 +548,6 @@ export {
   IconChevronUpDown,
   IconAthenaNameLogo,
   IconAthenaLogo,
-  IconAthenaLogoBlackBackground
+  IconAthenaLogoBlackBackground,
+  IconBackArrow
 }
