@@ -34,7 +34,7 @@ const exampleMessages = [
 
 export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
 
-  const handleExampleMessageClick = (message) => {
+  const handleExampleMessageClick = (message : any) => {
     setInput(message);
   };
 
@@ -58,7 +58,7 @@ export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
           <span className="items-center justify-end hidden ml-2 md:flex ">Connect Data Sources</span>
         </Link>
         </div>
-        <p className="mb-2 leading-normal text-center text-muted-foreground mt-8">Here's some example questions to get started:</p>
+        <p className="mb-2 leading-normal text-center text-muted-foreground mt-8">Here&apos;s some example questions to get started:</p>
         <div className="flex justify-center gap-2 mb-8 mt-4 bg-background">
           {exampleMessages.map((ex, index) => (
             <Button key={index} onClick={() => handleExampleMessageClick(ex.message)} className="btn-outline">
