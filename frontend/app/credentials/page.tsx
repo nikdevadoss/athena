@@ -245,9 +245,16 @@ const CredentialsPage = () => {
           )}
           <h2 className="text-md font-semibold">{dataSource.toUpperCase()}</h2>
         </div>
-        <Button onClick={() => setEditingDataSource(editingDataSource !== dataSource ? dataSource : null)}>
-          {editingDataSource === dataSource ? 'Close' : connectionStatuses[dataSource] === 'not-connected' ? 'Connect' : 'Edit'}
+        <Button onClick={() => {
+          if (connectionStatuses[dataSource] === 'connected') {
+            handleSave(dataSource);
+          } else {
+            setEditingDataSource(editingDataSource !== dataSource ? dataSource : null);
+          }
+          }}>
+          {editingDataSource === dataSource ? 'Close' : connectionStatuses[dataSource] === 'not-connected' ? 'Connect' : 'Sync'}
         </Button>
+
       </div>
       {editingDataSource === dataSource && (
         <>
