@@ -151,7 +151,7 @@ export async function POST(req: any) {
   console.log(JSON.stringify(datasourceQueryResponse))
 
 
-  const answerPrompt = `A user asked: "${prompt}". \n\n\ Given the following query results: ${JSON.stringify(datasourceQueryResponse)}\n\nCalculate the total following the operation: ${mathExpression}, and craft an answer to the user's question based on this information. \n\n Make sure to show the exact SQL queries for each data source: ${JSON.stringify(queries)} \n\n Also show the math done to get the answer you provided as well: ${mathExpression} \n\n\ Keep in mind that if a datasource returned an error, that's likely because the question the user asked didn't have any relevant data in that datasource. If that's the case, you can still give an answer based on the datasources that did return valid results.`;
+  const answerPrompt = `A user asked: "${prompt}". \n\n\ Given the following query results: ${JSON.stringify(datasourceQueryResponse)}\n\nCalculate the total following the operation: ${mathExpression}, and craft an answer to the user's question based on this information. \n\n Make sure to show the exact SQL queries for each data source: ${JSON.stringify(queries)} \n\n Also show the math done to get the answer you provided as well: ${mathExpression} \n\n\ Keep in mind that if a datasource returned an error, that's likely because the question the user asked didn't have any relevant data in that datasource. If that's the case, you can still give an answer based on the datasources that did return valid results. \n\n\ Make sure to display the SQL queries needed to get the response.`;
   
   console.log(answerPrompt)
 
