@@ -1,6 +1,9 @@
 # Athena
 
 Athena is a business intelligence tool that allows you to connect external data sources and ask natural language questions across those data sources with no extra setup.
+
+https://get-athena.vercel.app/
+
 ## Features
 
 - **Natural Language Processing**: Ask questions in plain English.
